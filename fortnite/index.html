@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAS.FILIS | Tienda Online</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-cream: #F9F6F0;
+      --bg-white: #FFFFFF;
+      --text-dark: #333333;
+      --border-color: #E2DAD0;
+      --topbar-bg: #EBE3D5;
+      --accent-brown: #714D32;
+      --promo-red: #D9534F;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--bg-white);
+      color: var(--text-dark);
+      padding-bottom: 50px;
+    }
+
+    /* BARRA SUPERIOR */
+    .top-bar {
+      background-color: var(--topbar-bg);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 8px 10px;
+      color: var(--text-dark);
+    }
+    .top-bar-item { display: flex; align-items: center; gap: 6px; }
+    .top-bar-item a { color: inherit; text-decoration: none; }
+    .top-bar-item a:hover { text-decoration: underline; }
+
+    /* ENCABEZADO */
+    header {
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .menu-icon { font-size: 20px; cursor: pointer; }
+    .logo {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      letter-spacing: 2px;
+      text-decoration: none;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+    .nav-menu { display: flex; list-style: none; gap: 20px; }
+    .nav-menu a {
+      text-decoration: none;
+      color: #666;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .nav-menu a:hover { color: var(--text-dark); }
+    .cart-btn-container { position: relative; cursor: pointer; font-size: 16px; }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background-color: var(--accent-brown);
+      color: #fff;
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 50%;
+    }
+
+    /* MENÚ LATERAL DESPLEGABLE */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background-color: var(--bg-white);
+      box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      transition: left 0.3s ease;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .side-menu.open { left: 0; }
+    .close-menu {
+      align-self: flex-end;
+      font-size: 20px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .side-menu h3 {
+      font-family: 'Georgia', serif;
+      font-size: 18px;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+    .side-menu ul { list-style: none; display: flex; flex-direction: column; gap: 15px; }
+    .side-menu ul li a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .side-menu ul li a:hover { color: var(--accent-brown); }
+
+    /* PANEL DE CARRITO LATERAL */
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -350px;
+      width: 350px;
+      height: 100%;
+      background-color: var(--bg-white);
+      box-shadow: -3px 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      transition: right 0.3s ease;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.open { right: 0; }
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .cart-header h3 { font-family: 'Georgia', serif; font-size: 16px; letter-spacing: 1px; }
+    .close-cart { font-size: 18px; cursor: pointer; }
+    .cart-items { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; font-size: 11px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
+    .cart-item-details { display: flex; flex-direction: column; gap: 4px; }
+    .cart-item-title { font-weight: bold; text-transform: uppercase; }
+    .cart-footer { border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px; }
+    .cart-total { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
+    .checkout-btn {
+      width: 100%;
+      background-color: #25D366;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    /* VENTANA EMERGENTE (MODAL) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      max-width: 850px;
+      width: 95%;
+      max-height: 90vh;
+      border-radius: 6px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      overflow-y: auto;
+    }
+    .close-modal {
+      position: absolute;
+      top: 15px; right: 20px;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .modal-images-container {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      width: 100%;
+      background-color: #FAF8F5;
+      border-radius: 4px;
+      padding: 10px;
+      scroll-snap-type: x mandatory;
+    }
+    .modal-image {
+      width: 100%;
+      min-width: 100%;
+      height: 380px;
+      object-fit: contain;
+      scroll-snap-align: center;
+    }
+    .modal-title { font-family: 'Georgia', serif; font-size: 20px; font-weight: normal; }
+    .modal-desc { font-size: 12px; color: #555; line-height: 1.5; }
+    .modal-price { font-size: 16px; font-weight: bold; color: #000; }
+
+    /* BANNER PRINCIPAL (HERO) */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: var(--bg-cream);
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-content {
+      padding: 60px 40px;
+      width: 45%;
+      z-index: 2;
+    }
+    .hero-title {
+      font-family: 'Georgia', serif;
+      font-size: 42px;
+      line-height: 1.1;
+      font-weight: normal;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    .hero-subtitle {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: #555;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    .hero-btn {
+      background-color: var(--accent-brown);
+      color: #FFF;
+      padding: 12px 24px;
+      border: none;
+      font-size: 10px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .hero-image {
+      width: 55%;
+      height: 450px;
+      object-fit: cover;
+    }
+
+    /* BARRA DE BENEFICIOS */
+    .features-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #444;
+    }
+    .feature { display: flex; align-items: center; gap: 8px; }
+    .feature a { color: inherit; text-decoration: none; }
+    .feature a:hover { text-decoration: underline; }
+
+    /* GRILLA DE CATEGORÍAS */
+    .categories {
+      max-width: 1200px;
+      margin: 30px auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      padding: 0 20px;
+    }
+    .category-card {
+      position: relative;
+      height: 250px;
+      background-color: #EEE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .category-card:hover { transform: scale(1.02); }
+    .category-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .category-label {
+      position: relative;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 20px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      z-index: 2;
+    }
+
+    /* SECCIÓN PRODUCTOS Y DISTANCIA */
+    .products-section {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 20px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+    .section-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .view-all {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #666;
+    }
+    
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 35px;
+    }
+    .product-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .product-image {
+      background-color: var(--bg-cream);
+      height: 240px;
+      width: 100%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .heart-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 16px;
+      color: #999;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 2;
+    }
+    
+    /* ETIQUETA DE PROMO LLAMATIVA */
+    .promo-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--promo-red);
+      color: white;
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      z-index: 2;
+    }
+    .product-price.promo-price {
+      color: var(--promo-red);
+      font-size: 13px;
+    }
+
+    .product-title {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-weight: bold;
+      color: #444;
+    }
+    .product-price {
+      font-size: 12px;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 10px;
+    }
+    .add-to-cart-btn {
+      background-color: var(--text-dark);
+      color: #fff;
+      border: none;
+      padding: 8px;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      width: 100%;
+    }
+    .add-to-cart-btn:hover { background-color: var(--accent-brown); }
+
+    /* VISTA DE CATEGORÍA SECUNDARIA */
+    .category-page {
+      display: none;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .page-title {
+      text-align: center;
+      margin-bottom: 35px;
+      font-family: 'Georgia', serif;
+      font-size: 32px;
+      font-weight: normal;
+    }
+    .subpage-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 35px;
+    }
+    .subpage-grid .product-image {
+      height: 260px;
+    }
+
+    /* BOTÓN FLOTANTE DE WHATSAPP */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #25D366;
+      color: #FFF;
+      border-radius: 50px;
+      text-align: center;
+      font-size: 30px;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+      z-index: 99;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .whatsapp-float:hover { transform: scale(1.1); }
+
+    @media (max-width: 768px) {
+      .top-bar { font-size: 8px; gap: 10px; flex-wrap: wrap; }
+      .nav-menu { display: none; }
+      .hero { flex-direction: column; text-align: center; }
+      .hero-content { width: 100%; padding: 40px 20px; }
+      .hero-image { width: 100%; height: 300px; }
+      .features-bar { flex-wrap: wrap; gap: 10px; justify-content: center; }
+      .categories { grid-template-columns: repeat(2, 1fr); }
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .subpage-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR -->
+  <div class="top-bar">
+    <div class="top-bar-item">🚚 Envíos a todo el país</div>
+    <div class="top-bar-item">💳 Mercado Pago</div>
+    <div class="top-bar-item">📷 <a href="https://instagram.com/las.filis" target="_blank">@las.filis</a></div>
+  </div>
+
+  <!-- ENCABEZADO -->
+  <header>
+    <div class="nav-container">
+      <div class="menu-icon" onclick="toggleSideMenu()">☰</div>
+      <a onclick="showHome()" class="logo">LAS. FILIS</a>
+      <ul class="nav-menu">
+        <li><a onclick="showCategory('sweaters')">Sweater/Remera</a></li>
+        <li><a onclick="showCategory('camisas')">Camisas</a></li>
+        <li><a onclick="showCategory('pantalones')">Pantalones</a></li>
+        <li><a onclick="showCategory('bijouterie')">Bijouterie</a></li>
+        <li><a onclick="showCategory('accesorios')">Accesorios</a></li>
+      </ul>
+      <div class="cart-btn-container" onclick="toggleCart()">
+        🛒 <span id="cart-count" class="cart-badge">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MENÚ LATERAL DESPLEGABLE -->
+  <div id="side-menu" class="side-menu">
+    <div class="close-menu" onclick="toggleSideMenu()">✕</div>
+    <h3>Categorías</h3>
+    <ul>
+      <li><a onclick="toggleSideMenu(); showHome();">Inicio</a></li>
+      <li><a onclick="toggleSideMenu(); showCategory('sweaters');">Sweater/Remera</a></li>
+      <li><a onclick="toggleSideMenu(); showCategory('camisas');">Camisas</a></li>
+      <li><a onclick="toggleSideMenu(); showCategory('pantalones');">Pantalones</a></li>
+      <li><a onclick="toggleSideMenu(); showCategory('bijouterie');">Bijouterie</a></li>
+      <li><a onclick="toggleSideMenu(); showCategory('accesorios');">Accesorios</a></li>
+    </ul>
+  </div>
+
+  <!-- PANEL DE CARRITO LATERAL -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-header">
+      <h3>Tu Carrito</h3>
+      <div class="close-cart" onclick="toggleCart()">✕</div>
+    </div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total-price">$ 0</span>
+      </div>
+      <button class="checkout-btn" onclick="checkoutWhatsApp()">Finalizar compra por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- VENTANA EMERGENTE (MODAL) -->
+  <div id="product-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content">
+      <div class="close-modal" onclick="closeModalBtn()">✕</div>
+      <div id="modal-images-container" class="modal-images-container"></div>
+      <h2 id="modal-title" class="modal-title">Título</h2>
+      <p id="modal-desc" class="modal-desc">Descripción</p>
+      <div id="modal-price" class="modal-price">$ 0</div>
+      <button class="add-to-cart-btn" id="modal-add-btn">Agregar al Carrito</button>
+    </div>
+  </div>
+
+  <!-- CONTENIDO VISTA PRINCIPAL (HOME) -->
+  <div id="home-view">
+    <section class="hero">
+      <div class="hero-content">
+        <h1 class="hero-title">Looks que<br>te acompañan<br>cada día</h1>
+        <p class="hero-subtitle">INDUMENTARIA Y ACCESORIOS<br>PARA MUJERES REALES</p>
+        <button class="hero-btn" onclick="showCategory('pantalones')">Ver Pantalones →</button>
+      </div>
+      <img src="images/hero-bg.jpg" alt="Portada" class="hero-image">
+    </section>
+
+    <div class="features-bar">
+      <div class="feature">🚚 Envíos a todo el país</div>
+      <div class="feature">📷 <a href="https://instagram.com/las.filis" target="_blank">@las.filis</a></div>
+      <div class="feature">🔒 Compra Segura</div>
+      <div class="feature">💬 Atención personalizada</div>
+    </div>
+
+    <section class="categories">
+      <div onclick="showCategory('sweaters')" class="category-card">
+        <img src="images/sweater-feli-1.jpg" alt="Sweater/Remera">
+        <div class="category-label">SWEATER/REMERA</div>
+      </div>
+      <div onclick="showCategory('pantalones')" class="category-card">
+        <img src="images/cat-pantalones.jpg" alt="Pantalones">
+        <div class="category-label">PANTALONES</div>
+      </div>
+      <div onclick="showCategory('camisas')" class="category-card">
+        <img src="images/camisaco-print-1.jpg" alt="Camisas">
+        <div class="category-label">CAMISAS</div>
+      </div>
+      <div onclick="showCategory('bijouterie')" class="category-card">
+        <img src="images/cat-bijou.jpg" alt="Bijouterie">
+        <div class="category-label">BIJOUTERIE</div>
+      </div>
+    </section>
+
+    <section class="products-section">
+      <div class="section-header">
+        <h2 class="section-title">Nuevos Ingresos</h2>
+        <a onclick="showCategory('pantalones')" class="view-all" style="cursor:pointer;">Ver Todos →</a>
+      </div>
+      <div class="product-grid" id="home-products-grid"></div>
+    </section>
+  </div>
+
+  <!-- CONTENIDO VISTA CATEGORÍA DINÁMICA -->
+  <div id="category-view" class="category-page">
+    <div onclick="showHome()" class="back-btn">← Volver al inicio</div>
+    <h1 id="category-title" class="page-title">Categoría</h1>
+    <div id="category-products" class="subpage-grid"></div>
+  </div>
+
+  <!-- BOTÓN FLOTANTE WHATSAPP -->
+  <a href="https://wa.me/5491154602180" class="whatsapp-float" target="_blank" title="Escríbenos por WhatsApp">💬</a>
+
+  <!-- LÓGICA DE JAVASCRIPT -->
+  <script>
+    const bijouList = [
+      { id: 1, title: 'Collar de seda con estrella', desc: 'Collar de pañuelo de seda, con pasantes de CCB y dije de fundición dorado en forma de estrella de mar.', price: 5500, imgs: ['images/collar-seda-estrella.jpg'] },
+      { id: 2, title: 'Collar gamuza solar', desc: 'Collar de gamuza de múltiples vueltas, con dije exclusivo de fundición con forma sol playero y terminales en punteras.\nMedida: 140cm de largo.', price: 5000, imgs: ['images/gamuza-solar.jpg'] },
+      { id: 3, title: 'Collar corbatero sol níquel', desc: 'Collar corbatero de cordón PU de múltiples vueltas, con dije de fundición níquel con forma de sol y terminales en punteras.\nMedida: 140 cm de largo.', price: 5000, imgs: ['images/corbatero-sol.jpg'] },
+      { id: 4, title: 'Collar corbatero estrella níquel', desc: 'Collar corbatero de cordón PU de múltiples vueltas, con dije de fundición níquel con forma de estrella de mar y terminales en punteras.\nMedida: 140 cm de largo.', price: 5000, imgs: ['images/corbatero-estrella.jpg'] },
+      { id: 5, title: 'Set de dos collares gamuza y cadena', desc: 'Set de dos collares, uno de gamuza con dije orgánico, otro de cadena con dije de gamuza.\nMedidas: 40cm de largo ajustable con cadena de enganche de 10cm, y 140cm de largo gamuza.', price: 6400, imgs: ['images/set-dos-collares.jpg'] },
+      { id: 6, title: 'Collar enhebrado cuentas de vidrio', desc: 'Collar enhebrado de cuentas de vidrio simil piedras con dijes de fundición marinos dorados.\nMedida: 38cm de largo, ajustable con cadena de enganche de 10cm.', price: 8500, imgs: ['images/cuentas-vidrio.jpg'] },
+      { id: 7, title: 'Collar bolitas de vidrio energéticas', desc: 'Collar de bolitas de vidrio exclusivas energéticas (New energy).\nMedida: 35cm más largo ajustable con cadena de enganche de 10cm.', price: 6400, imgs: ['images/bolitas-vidrio.jpg'] },
+      { id: 8, title: 'Collar rocas de cristal y CCB', desc: 'Collar enhebrado de rocas de cristal, combinado con pasantes de CCB y dije pasante.\nMedida: 37cm de largo, ajustable con cadena de enganche de 10cm.', price: 7000, imgs: ['images/rocas-cristal.jpg'] },
+      { id: 9, title: 'Collar escallas y dije dorado', desc: 'Collar enhebrado con escallas, piezas pasantes y dije de fundición dorado.\nMedida: 36cm de largo, ajustable con cadena de enganche de 10cm.', price: 7000, imgs: ['images/escallas-dije.jpg'] },
+      { id: 10, title: 'Collar acrílico pasantes sol', desc: 'Collar de cuentas de acrílico enhebradas con pasantes de CCB dorados y dije de fundición con forma de sol.\nMedida: 37cm de largo, ajustable con cadena de enganche de 10cm.', price: 7600, imgs: ['images/acrilico-sol.jpg'] },
+      { id: 11, title: 'Collar gamuza estrella mar', desc: 'Collar de gamuza de múltiples vueltas, con dije de fundición en forma de estrella de mar y terminales en punteras.\nMedida: 150cm de largo.', price: 5000, imgs: ['images/gamuza-estrella.jpg'] },
+      { id: 12, title: 'Collar tanza de acero y acrílico', desc: 'Collar de tanza de acero, enhebrado con cuentas de acrílico y pasantes de CCB dorados.\nMedida: 37cm de largo, ajustable con cadena de enganche de 10cm.', price: 3200, imgs: ['images/tanza-acero.jpg'] },
+      { id: 13, title: 'Collar cuentas de vidrio energéticas', desc: 'Collar enhebrado de cuentas de vidrio energéticas.\nMedida: 37cm de largo, ajustable con cadena de enganche de 10cm.', price: 5000, imgs: ['images/vidrio-energeticas.jpg'] },
+      { id: 14, title: 'Collar vidrio 8MM energético', desc: 'Collar enhebrado con cuentas de vidrio 8MM energéticas.\nMedida: 36cm de largo, ajustable con cadena de enganche de 10cm.', price: 5000, imgs: ['images/vidrio-8mm.jpg'] },
+      { id: 15, title: 'Collar cadena dorada estrella', desc: 'Collar de cadena dorada con estrella de mar y dijes marinos.\nMedida: 37 cm.', price: 5000, imgs: ['images/cadena-estrella.jpg'] },
+      { id: 16, title: 'Collar rocas de cristal y strass', desc: 'Collar con rocas de cristal y dije de estrella de mar con strass.\nMedida: 35 cm más cadena de enganche de 10 cm.', price: 6400, imgs: ['images/cristal-strass.jpg'] }
+    ];
+
+    const pantalonesList = [
+      { 
+        id: 201, 
+        title: 'Pantalon Print linea italiana', 
+        desc: 'Diseño exclusivo de línea italiana con estampa print.', 
+        price: 35000, 
+        imgs: ['images/pantalon-print-1.jpg', 'images/pantalon-print-2.jpg'],
+        isPromo: true 
+      },
+      { 
+        id: 202, 
+        title: 'Pantalon pluton', 
+        desc: 'Modelo Plutón cómodo y de gran estilo.', 
+        price: 48000, 
+        imgs: ['images/pantalon-pluton-1.jpg', 'images/pantalon-pluton-2.jpg', 'images/pantalon-pluton-3.jpg'] 
+      },
+      { 
+        id: 203, 
+        title: 'Pantalon Afrodita', 
+        desc: 'Modelo Afrodita elegante y moderno.', 
+        price: 40000, 
+        imgs: ['images/pantalon-afrodita-1.jpg', 'images/pantalon-afrodita-2.jpg', 'images/pantalon-afrodita-3.jpg'],
+        isPromo: true 
+      },
+      { 
+        id: 204, 
+        title: 'Pantalon Venus', 
+        desc: 'Importado. Línea Italiana.', 
+        price: 50000, 
+        imgs: ['images/pantalon-venus-1.jpg', 'images/pantalon-venus-2.jpg', 'images/pantalon-venus-3.jpg'] 
+      },
+      { 
+        id: 205, 
+        title: 'Pantalon Atena', 
+        desc: 'Línea italiana.', 
+        price: 48000, 
+        imgs: ['images/pantalon-atena-1.jpg', 'images/pantalon-atena-2.jpg', 'images/pantalon-atena-3.jpg'] 
+      },
+      { 
+        id: 206, 
+        title: 'Pantalon Zeus', 
+        desc: 'Importado, línea italiana.', 
+        price: 54000, 
+        imgs: ['images/pantalon-zeus-1.jpg', 'images/pantalon-zeus-2.jpg', 'images/pantalon-zeus-3.jpg'] 
+      },
+      { 
+        id: 207, 
+        title: 'Pantalon Ballon', 
+        desc: 'Diseño exclusivo corte Ballon.', 
+        price: 30000, 
+        imgs: ['images/pantalon-ballon-1.jpg', 'images/pantalon-ballon-2.jpg'] 
+      },
+      { 
+        id: 208, 
+        title: 'Pantalon Escorpio', 
+        desc: 'Línea Italiana.', 
+        price: 50000, 
+        imgs: ['images/pantalon-escorpio-1.jpg', 'images/pantalon-escorpio-2.jpg', 'images/pantalon-escorpio-3.jpg'],
+        isPromo: true 
+      }
+    ];
+
+    const camisasList = [
+      { 
+        id: 302, 
+        title: 'Camisaco Print', 
+        desc: 'Camisaco animal print moderno y versátil.', 
+        price: 34000, 
+        imgs: ['images/camisaco-print-1.jpg', 'images/camisaco-print-2.jpg', 'images/camisaco-print-3.jpg'] 
+      },
+      { 
+        id: 303, 
+        title: 'Camisa Print', 
+        desc: 'Camisa animal print estilo único.', 
+        price: 28000, 
+        imgs: ['images/camisa-print-1.jpg'] 
+      }
+    ];
+
+    const sweatersRemerasList = [
+      {
+        id: 401,
+        title: 'Sweater Feli',
+        desc: 'Tejido suave y cómodo.',
+        price: 35000,
+        imgs: ['images/sweater-feli-1.jpg', 'images/sweater-feli-2.jpg', 'images/sweater-feli-3.jpg', 'images/sweater-feli-4.jpg']
+      },
+      {
+        id: 402,
+        title: 'Sweater Josefina',
+        desc: 'Modelo clásico e imprescindible.',
+        price: 35000,
+        imgs: ['images/sweater-josefina-1.jpg', 'images/sweater-josefina-2.jpg', 'images/sweater-josefina-3.jpg']
+      },
+      {
+        id: 403,
+        title: 'Blusa tejida',
+        desc: 'Blusa de punto delicada.',
+        price: 35000,
+        imgs: ['images/blusa-tejida-1.jpg', 'images/blusa-tejida-2.jpg']
+      },
+      {
+        id: 404,
+        title: 'Chaleco básic',
+        desc: 'Chaleco básico ideal para armar capas de prendas.',
+        price: 18000,
+        imgs: ['images/chaleco-basic-1.jpg', 'images/chaleco-basic-2.jpg']
+      },
+      {
+        id: 405,
+        title: 'Body Lara',
+        desc: 'Musculosa. Talle único.',
+        price: 15000,
+        imgs: ['images/body-lara-1.jpg']
+      },
+      {
+        id: 406,
+        title: 'Body Emy',
+        desc: 'Remera. Talle único.',
+        price: 15000,
+        imgs: ['images/body-emy-1.jpg']
+      },
+      {
+        id: 407,
+        title: 'Body Lucy',
+        desc: 'Bretel fino. Talle único.',
+        price: 15000,
+        imgs: ['images/body-lucy-1.jpg']
+      },
+      {
+        id: 408,
+        title: 'Remera Micromorley',
+        desc: 'Talle único.',
+        price: 15000,
+        imgs: ['images/remera-micromorley-1.jpg', 'images/remera-micromorley-2.jpg']
+      },
+      {
+        id: 409,
+        title: 'Remera Emy',
+        desc: 'Encaje. Talles: S, M. Colores: Blanca, Choco, Negra.',
+        price: 15000,
+        imgs: ['images/remera-emy-1.jpg']
+      },
+      {
+        id: 410,
+        title: 'Musculosa solero',
+        desc: 'Talle único. Varios colores.',
+        price: 13000,
+        imgs: ['images/musculosa-solero-1.jpg', 'images/musculosa-solero-2.jpg', 'images/musculosa-solero-3.jpg']
+      }
+    ];
+
+    const productsData = {
+      sweaters: sweatersRemerasList,
+      camisas: camisasList,
+      pantalones: pantalonesList,
+      bijouterie: bijouList,
+      accesorios: [
+        { id: 105, title: 'Lentes PADU', desc: 'Protección y estilo moderno.', price: 18500, imgs: ['images/lentes-padu.jpg'] }
+      ]
+    };
+
+    let cart = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById('home-products-grid');
+      const destacados = pantalonesList.slice(0, 4);
+      grid.innerHTML = destacados.map(p => renderProductCard(p)).join('');
+    });
+
+    function renderProductCard(p) {
+      const promoBadge = p.isPromo ? '<div class="promo-badge">PROMO</div>' : '';
+      const priceClass = p.isPromo ? 'product-price promo-price' : 'product-price';
+      const priceText = p.isPromo ? `$ ${p.price.toLocaleString('es-AR')} <span style="font-size:10px;">(PROMO)</span>` : `$ ${p.price.toLocaleString('es-AR')}`;
+
+      return `
+        <div class="product-card">
+          ${promoBadge}
+          <button class="heart-icon">♡</button>
+          <div onclick="openModal('${p.title}', '${p.desc.replace(/\n/g, '<br>')}', ${p.price}, ${JSON.stringify(p.imgs).replace(/"/g, '&quot;')})">
+            <img src="${p.imgs[0]}" alt="${p.title}" class="product-image">
+            <div class="product-title">${p.title}</div>
+            <div class="${priceClass}">${priceText}</div>
+          </div>
+          <button class="add-to-cart-btn" onclick="addToCart('${p.title}', ${p.price})">Agregar</button>
+        </div>
+      `;
+    }
+
+    function toggleSideMenu() {
+      document.getElementById('side-menu').classList.toggle('open');
+    }
+
+    function toggleCart() {
+      document.getElementById('cart-drawer').classList.toggle('open');
+    }
+
+    function showHome() {
+      document.getElementById('home-view').style.display = 'block';
+      document.getElementById('category-view').style.display = 'none';
+      window.scrollTo(0, 0);
+    }
+
+    function showCategory(categoryKey) {
+      document.getElementById('home-view').style.display = 'none';
+      document.getElementById('category-view').style.display = 'block';
+      
+      let titleText = categoryKey.toUpperCase();
+      if (categoryKey === 'sweaters') titleText = 'SWEATER / REMERA';
+      document.getElementById('category-title').textContent = titleText;
+
+      const items = productsData[categoryKey] || [];
+      const container = document.getElementById('category-products');
+      
+      container.innerHTML = items.map(item => renderProductCard(item)).join('');
+      window.scrollTo(0, 0);
+    }
+
+    function openModal(title, desc, price, imgs) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').innerHTML = desc;
+      document.getElementById('modal-price').textContent = '$ ' + price.toLocaleString('es-AR');
+      
+      const imagesContainer = document.getElementById('modal-images-container');
+      imagesContainer.innerHTML = imgs.map(img => `<img src="${img}" class="modal-image" alt="Foto producto">`).join('');
+
+      document.getElementById('modal-add-btn').onclick = function() {
+        addToCart(title, price);
+        closeModalBtn();
+      };
+      document.getElementById('product-modal').style.display = 'flex';
+    }
+
+    function closeModal(event) {
+      if (event.target.id === 'product-modal') {
+        document.getElementById('product-modal').style.display = 'none';
+      }
+    }
+
+    function closeModalBtn() {
+      document.getElementById('product-modal').style.display = 'none';
+    }
+
+    function addToCart(title, price) {
+      cart.push({ title, price });
+      updateCartUI();
+      toggleCart();
+    }
+
+    function updateCartUI() {
+      document.getElementById('cart-count').textContent = cart.length;
+      const itemsContainer = document.getElementById('cart-items');
+      
+      if (cart.length === 0) {
+        itemsContainer.innerHTML = '<p style="font-size:11px; color:#777;">Tu carrito está vacío.</p>';
+        document.getElementById('cart-total-price').textContent = '$ 0';
+        return;
+      }
+
+      let total = 0;
+      itemsContainer.innerHTML = cart.map((item, index) => {
+        total += item.price;
+        return `
+          <div class="cart-item">
+            <div class="cart-item-details">
+              <span class="cart-item-title">${item.title}</span>
+              <span>$ ${item.price.toLocaleString('es-AR')}</span>
+            </div>
+            <span onclick="removeFromCart(${index})" style="cursor:pointer; color:#999; font-size:14px;">🗑️</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cart-total-price').textContent = '$ ' + total.toLocaleString('es-AR');
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function checkoutWhatsApp() {
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+      let mensaje = "¡Hola! Quisiera realizar el siguiente pedido:%0A";
+      let total = 0;
+      cart.forEach(item => {
+        mensaje += `- ${item.title} ($ ${item.price.toLocaleString('es-AR')})%0A`;
+        total += item.price;
+      });
+      mensaje += `%0A*Total: $ ${total.toLocaleString('es-AR')}*`;
+      
+      window.open(`https://wa.me/5491154602180?text=${mensaje}`, '_blank');
+    }
+  </script>
+
+</body>
+</html>
